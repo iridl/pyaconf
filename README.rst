@@ -5,17 +5,23 @@ Pyaconf is built around Python dicts and supports json, yaml, ini and maybe othe
 compatible formats in the future. Supports layered configs (inheritance, overrides). 
 
 * A configuration is a json compatible dict. Yaml and pyaconf formats must be json compatible.
-* The library API is very simple, it provides only two functions ``load`` and ``merge``.
+* The library API is very simple, it provides only three functions ``load`` and ``merge``, and ``dump``.
 * The first function `load` takes in a dict that may include special keyword '__include__' at multiple levels, and it resolves these includes and returns a dict without includes. It can also read the input dict from a file.
 
 ```
-load(path: string | fp: FILE | conf: dict w/ includes, fmt: string = 'auto' ('auto'|'pyaconf'|'json'|'yaml'|'ini') -> dict w/o includes; if fmt=auto, deduces format by extension (.yaml, .yml, .json., .pyaconf, ini)
+load(path: string or pathlib.Path | fp: FILE or io. | conf: dict w/ includes, fmt: string = 'auto' ('auto'|'pyaconf'|'json'|'yaml'|'ini') -> dict w/o includes; if fmt=auto, deduces format by extension (.yaml, .yml, .json., .pyaconf, ini)
 ```
 
-* The second function `merge` simply merges two dicts (that dont contain includes) and returns a new dict where the values of the first dict are updated recursively by the values of the second dict.
+* The second function ``merge`` simply merges two dicts (that dont contain includes) and returns a new dict where the values of the first dict are updated recursively by the values of the second dict.
 
 ```
 merge(d1: dict w/o includes, d2: dict w/o includes) -> dict w/o includes -- recursively merges dicts 
+```
+
+* The third functions ``dump`` outputs the resulting (resolved) config in yaml or json.
+
+```
+dump(d1: dict w/o includes, d2: dict w/o includes) -> dict w/o includes -- recursively merges dicts 
 ```
 
 * First level of a config must be a dict.
@@ -32,7 +38,7 @@ merge(d1: dict w/o includes, d2: dict w/o includes) -> dict w/o includes -- recu
              ("boo.config","yaml"),
              "zoo.pyaconf",
           ],
-          prefix = prefix
+          prefix = prefix,
           full_prefix = prefix + "/xyz",
           dbpool = pyaconf.merge(
              pyaconf.load(dict(
