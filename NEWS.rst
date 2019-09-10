@@ -1,3 +1,8 @@
+What's new in pyaconf 0.4.0
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Updated README
+
 What's new in pyaconf 0.3.0
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
