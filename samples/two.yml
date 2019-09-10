@@ -1,0 +1,4 @@
+one:
+   __include__: sample.ini
+two:
+   __include__: zoo.pyaconf
