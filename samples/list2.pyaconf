@@ -1,0 +1,10 @@
+def config():
+   return dict(
+      __include__ = "list1.pyaconf",
+      a = [
+         dict(z=3, y=4),
+         dict(z=30, y=40),
+         dict(z=300, y=400),
+      ]
+   )
+

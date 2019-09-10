@@ -5,7 +5,7 @@ with open("README.rst", "r") as f:
 
 setuptools.setup(
    name="pyaconf",
-   version="0.2.0",
+   version="0.3.0",
    author="ikh software, inc.",
    author_email="ikh@ikhsoftware.com",
    description="Yet another config library that is built around python dict and supports json, yaml",
