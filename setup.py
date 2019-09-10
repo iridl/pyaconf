@@ -1,6 +1,6 @@
 import setuptools
 
-with open("README.rst", "r") as f:
+with open("README.md", "r") as f:
     long_description = f.read()
 
 setuptools.setup(
@@ -8,7 +8,7 @@ setuptools.setup(
    version="0.3.0",
    author="ikh software, inc.",
    author_email="ikh@ikhsoftware.com",
-   description="Yet another config library that is built around python dict and supports json, yaml",
+   description="Yet another config library that is built around python dict and supports native python dicts, json, yaml, ini",
    long_description=long_description,
    long_description_content_type="text/x-rst",
    url="https://bitbucket.org/ikh/pyaconf",
