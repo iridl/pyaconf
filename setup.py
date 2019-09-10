@@ -5,7 +5,7 @@ with open("README.rst", "r") as f:
 
 setuptools.setup(
    name="pyaconf",
-   version="0.1.0",
+   version="0.2.0",
    author="ikh software, inc.",
    author_email="ikh@ikhsoftware.com",
    description="Yet another config library that is built around python dict and supports json, yaml",
@@ -20,6 +20,7 @@ setuptools.setup(
    ],
    python_requires = '>= 3.7',
    install_requires=[
+      'pyyaml == 5.1.*',
    ],
    project_urls={
         'Bug Reports': 'https://bitbucket.org/ikh/pyaconf/issues',

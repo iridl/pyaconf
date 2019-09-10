@@ -37,6 +37,7 @@ import json
 import yaml
 import itertools
 import pathlib
+import configparser
 
 LOAD_KEY = '__include__'
 
@@ -124,9 +125,20 @@ def _load_file(f, fmt, fname='<file>'):
       genv = {}
       exec(compile(c, fname, 'exec'), genv)
       x = eval('config()', genv)
+   elif fmt == 'ini':
+      x = _load_ini(f, fname)
    else:
       raise Exception(f'pyaconf._load_file: fmt "{fmt}" is not supported')
    return _load(x)
+
+def _load_ini(f, fname):
+   c = configparser.ConfigParser()
+   c.read_file(f)
+   r = {}
+   for s in c.sections():
+      if s != 'DEFAULT':
+         r[s] = dict(c[s])
+   return r
 
 
 # --- merge ---

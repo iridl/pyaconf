@@ -1,0 +1,21 @@
+import os
+def config():
+   prefix = "/aaa/bbb"
+   conf = dict(
+      __include__ = [
+         "foo.json",
+         ("boo.config","yaml"),
+         "zoo.pyaconf",
+      ],
+      prefix = prefix,
+      full_prefix = prefix + "/xyz",
+      dbpool = dict(
+            __include__ = "zoo.pyaconf",
+            database = "geom",
+            host = "localhost",
+            user = os.environ["DATABASE_USER"],
+            password = None,
+      ),
+   )
+   return conf
+

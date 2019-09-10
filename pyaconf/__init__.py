@@ -34,7 +34,7 @@
 name = "pyaconf"
 __author__ = """Igor Khomyakov"""
 __email__ = 'ikh@ikhsoftware.com'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 from pyaconf.pyaconf import load, merge, dump
 
