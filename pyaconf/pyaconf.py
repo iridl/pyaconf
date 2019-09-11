@@ -141,7 +141,11 @@ def _load_file(f, format, path, context):
    cf, tf = (format.split('.')+[None]*2)[:2]
    if tf is not None:
       if tf == 'jinja2':
-         f = io.StringIO(jinja2.Template(f.read()).render(context))
+         spath = path.parent if path is not None else '.'
+         tloader = jinja2.FileSystemLoader(searchpath=str(spath))
+         tenv = jinja2.Environment(loader=tloader)
+         t = tenv.from_string(f.read())
+         f = io.StringIO(t.render(context))
       else:
          raise Exception(f"pyaconf.load: template engine is not supported (format={format}, path={path}, context={context})")
 
