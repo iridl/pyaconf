@@ -21,6 +21,7 @@ setuptools.setup(
    python_requires = '>= 3.7',
    install_requires=[
       'pyyaml == 5.1.*',
+      'jinja2 == 2.10.*',
    ],
    scripts=[
       'pyaconf2json',

@@ -38,6 +38,7 @@ import yaml
 import itertools
 import pathlib
 import configparser
+import jinja2
 
 LOAD_KEY = '__include__'
 
@@ -46,12 +47,13 @@ def logg(*args, **kwargs):
 
 # --- load ---
 
-def load(src, *, format='auto', path=None):
+def load(src, *, format='auto', path=None, context={}):
    """ loads a dict that may include special keyword '__include__' at multiple levels,
    and resolves these includes and returns a dict without includes. It can also read the input dict from a file
    src -- dict|Mapping, FILE|io.StringIO(s), pathlib.Path|str
    format -- 'auto' | 'pyaconf' | 'json' | 'yaml' | 'ini'
    path -- is used only when src doesn't contain path info, it is used for error messages and resolve relative include paths
+   context -- is a dict that is used as context for template rendering if src is a template
    """
    if path is not None and not isinstance(path, pathlib.Path):
       path = pathlib.Path(path)
@@ -61,26 +63,25 @@ def load(src, *, format='auto', path=None):
    elif isinstance(src, io.IOBase):
       if format == 'auto':
          raise Exception(f"pyaconf.load: specify format (format={format}, path={path})")
-      r = _load_file(src, format, path)
+      r = _load_file(src, format, path, context)
    elif isinstance(src, str):
-      r = load(pathlib.Path(src), format=format, path=path)
+      r = load(pathlib.Path(src), format=format, path=path, context=context)
    elif isinstance(src, pathlib.Path):
       if format == 'auto':
-         ext = src.suffix
+         ext = ''.join(src.suffixes)
          if ext in _input_extensions:
             format = _input_extensions[ext]
          else:
-            raise Exception(f"pyaconf.load: cannot derive format from file extension, specify format (path={src})")
+            raise Exception(f"pyaconf.load: cannot derive format from file extension, specify format (path={src}, context={context})")
 
       if path is not None and not src.is_absolute():
          src = path.parent / src
 
       with open(src, 'r') as f:
-         r = _load_file(f, format, src)
+         r = _load_file(f, format, src, context)
    else:
       raise Exception(f"pyaconf.load: illegal type of src (type={typ}, path={path})")
    return r
-
 
 _input_extensions = {
    '.yaml': 'yaml',
@@ -88,6 +89,16 @@ _input_extensions = {
    '.json': 'json',
    '.pyaconf': 'pyaconf',
    '.ini': 'ini',
+   '.yaml.jinja2': 'yaml.jinja2', 
+   '.yml.jinja2': 'yaml.jinja2',
+   '.json.jinja2': 'json.jinja2',
+   '.pyaconf.jinja2': 'pyaconf.jinja2',
+   '.ini.jinja2': 'ini.jinja2',
+   '.yaml.j2': 'yaml.jinja2', 
+   '.yml.j2': 'yml.jinja2',
+   '.json.j2': 'json.jinja2',
+   '.pyaconf.j2': 'pyaconf.jinja2',
+   '.ini.j2': 'ini.jinja2',
 }
 
 _output_extensions = {
@@ -106,38 +117,52 @@ def _load(x, path):
    return r
 
 def _load_dict(x, path):
+   c = {}
+   for k,v in x.items():
+      if k != LOAD_KEY:
+         c[k] = _load(v, path)
+
    rs = []
    if LOAD_KEY in x:
       loads = x[LOAD_KEY]
       for v in (loads if isinstance(loads, list) else [loads]):
-         rs.append(load(**v, path=path) if isinstance(v, collections.abc.Mapping) else load(v, path=path))
-   y = {}
-   for k,v in x.items():
-      if k != LOAD_KEY:
-         y[k] = _load(v, path)
-   rs.append(y)
-   r = merge(rs) if len(rs) > 1 else rs[0]
+         rs.append(load(**v, path=path, context=c) if isinstance(v, collections.abc.Mapping) else load(v, path=path, context=c))
+
+   r = merge(rs) if rs != [] else c
+
    return r
+
 
 def _load_list(x, path):
    return [_load(a, path) for a in x]
 
 
-def _load_file(f, format, path):
-   if format == 'yaml':
+def _load_file(f, format, path, context):
+   cf, tf = (format.split('.')+[None]*2)[:2]
+   if tf is not None:
+      if tf == 'jinja2':
+         f = io.StringIO(jinja2.Template(f.read()).render(context))
+      else:
+         raise Exception(f"pyaconf.load: template engine is not supported (format={format}, path={path}, context={context})")
+
+   if cf == 'yaml':
       x = yaml.load(f, Loader=yaml.Loader)
-   elif format == 'json':
+   elif cf == 'json':
       x = json.load(f)
-   elif format == 'pyaconf':
+   elif cf == 'pyaconf':
       c = f.read()
       genv = {}
       exec(compile(c, path, 'exec'), genv)
       x = eval('config()', genv)
-   elif format == 'ini':
+   elif cf == 'ini':
       x = _load_ini(f, path)
    else:
-      raise Exception(f"pyaconf.load: format is not supported (format={format}, path={path})")
-   return _load(x, path)
+      raise Exception(f"pyaconf.load: config format is not supported (format={format}, path={path}, context={context})")
+
+   r = _load(x, path)
+   if tf is None:
+      r = merge([r, context])
+   return r
 
 def _load_ini(f, path):
    c = configparser.ConfigParser()
