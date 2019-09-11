@@ -22,6 +22,10 @@ setuptools.setup(
    install_requires=[
       'pyyaml == 5.1.*',
    ],
+   scripts=[
+      'pyaconf2json',
+      'pyaconf2yaml',
+   ],
    project_urls={
         'Bug Reports': 'https://bitbucket.org/ikh/pyaconf/issues',
    },
