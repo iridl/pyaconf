@@ -1,3 +1,9 @@
+What's new in pyaconf 0.5.0
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Updated docs
+* Added scripts
+
 What's new in pyaconf 0.4.0
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

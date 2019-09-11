@@ -5,12 +5,12 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
    name="pyaconf",
-   version="0.4.0",
+   version="0.5.0",
    author="ikh software, inc.",
    author_email="ikh@ikhsoftware.com",
-   description="Yet another config library that is built around python dict and supports native python dicts, json, yaml, ini",
+   description="Yet another config library that is built around python dictionary and supports dynamic python, json, yaml, and ini formats with inheritance.",
    long_description=long_description,
-   long_description_content_type="text/x-rst",
+   long_description_content_type="text/markdown",
    url="https://bitbucket.org/ikh/pyaconf",
    packages=setuptools.find_packages(),
    classifiers=[
@@ -21,6 +21,10 @@ setuptools.setup(
    python_requires = '>= 3.7',
    install_requires=[
       'pyyaml == 5.1.*',
+   ],
+   scripts=[
+      'pyaconf2json',
+      'pyaconf2yaml',
    ],
    project_urls={
         'Bug Reports': 'https://bitbucket.org/ikh/pyaconf/issues',

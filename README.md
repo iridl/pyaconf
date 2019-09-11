@@ -1,10 +1,10 @@
-# pyaconf - layered config library built around python dict
+# pyaconf - yet another config library built around python dictionary
 
-Pyaconf is yet another config library that has the following features:
+Pyaconf is a config library that is built around python dictionary and supports dynamic python, json, yaml, and ini formats with inheritance.
+It features:
 
-* Built around python dicts, json and yaml
-* All configs are json compatible dicts
-* Supports layered configs via `__include__` dict entry, for example:
+* All configs are json compatible dicts.
+* Supports layered configs (inheritance) via `__include__` dict entry, for example, the following yaml config would read the dictionary defined from config `boo.json` and then will update it with `user` and `password` from this config:
 
 ```yaml
 __include__: boo.json
@@ -12,76 +12,65 @@ user: romeo
 password: romeoalpha
 ```
 
-* Can output configs in `.json` and `.yaml`
-* Supports `.ini` input format as understood by python's `configparser`
-* Very simple API: `load`, `dump`, and for more advance use `merge`
+* Simple API: `load`, `dump`, and for more advanced use `merge`.
 * Supports dynamic configs written in Python `.pyaconf`, for example:
 
 ```python
 import os
 def config():
    return dict(
-      __include__ = "secret.yml"
+      __include__ = ["secret.yml"],
       user = "romeo", 
-      password = os.environ['PASSWORD']
+      password = os.environ['PASSWORD'],
       database = dict(
-         __include__ = "db.ini"
-      )
+         __include__ = "db.ini",
+      ),
    )
 ```
 
-* Provides command line utility that resolves includes and python configs and outputs a static config in json or yaml that can be consumed by an application written in any language
+* Allows to output configs in `.json` and `.yaml`. Provides two shell scripts.
+* Supports `.ini` input format as understood by python's `configparser`.
 
 ## API
 
-* `load` takes in a dict that may include special keyword `__include__` at multiple levels, and it resolves these includes and returns a dict without includes. It can also read the input dict from a file.
+### load
 
 ```python
-load(path: string or pathlib.Path | fp: FILE or io. | conf: dict w/ includes, fmt: string = 'auto' ('auto'|'pyaconf'|'json'|'yaml'|'ini') -> dict w/o includes; if fmt=auto, deduces format by extension (.yaml, .yml, .json., .pyaconf, .ini)
+def load(src, fmt='auto', path=None):
+   """ loads a dict that may include special keyword '__include__' at multiple levels,
+   and resolves these includes and returns a dict without includes. It can also read the input dict from a file
+   src -- dict|Mapping, FILE|io.StringIO(s), pathlib.Path|str
+   fmt -- 'auto' | 'pyaconf' | 'json' | 'yaml' | 'ini'
+   path -- is used only when src doesn't contain path info, it is used for error messages and resolve relative include paths
 ```
 
-* `dump` outputs the resulting (resolved) config in yaml or json.
+### dump
 
 ```python
-dump(d1: dict w/o includes, d2: dict w/o includes) -> dict w/o includes -- recursively merges dicts 
+def dump(x, dst=sys.stdout, fmt='auto'):
+   """ Dumps resolved (without includes) config in json or yaml format. It doesn't preserve comments either. 
+   x -- dict|Mapping
+   dst -- FILE|io.StringIO(s), pathlib.Path|str
+   fmt -- 'auto' | 'json' | 'yaml'
+   """
 ```
 
-* `merge` simply merges two dicts (that dont contain includes) and returns a new dict where the values of the first dict are updated recursively by the values of the second dict.
 
-merge(ds) -> list of dicts w/o includes
-
-## Other
-
-* First level of a config must be a dict.
-* Reserved key `__include__` if present, should contain a path or list of paths to load. A path can be a string or a binary tuble containing the string and the format.
-* Python format has to contain a parameterless function config that returns dict w/o includes
+### merge
 
 ```python
-    import os
-    import pyaconf
-    def config():
-       prefix = "/aaa/bbb"
-       conf = dict(
-          __include__ = [
-             "foo.json",
-             ("boo.config","yaml"),
-             "zoo.pyaconf",
-          ],
-          prefix = prefix,
-          full_prefix = prefix + "/xyz",
-          dbpool = pyaconf.merge(
-             pyaconf.load(dict(
-                __include__ = "zoo.pyaconf",
-                database = "geom",
-                host = "localhost",
-                user = os.environ["DATABASE_USER"],
-                password = None,
-             )),
-             pyaconf.loadf("secrets.yaml")
-          )
-       )
-       return conf
+def merge(xs):
+   """ merges the list of dicts (that dont contain includes) and returns a new dict
+   where the values of the first dict are updated recursively by the values of the second dict.
+   xs -- a list of dicts
+   """
 ```
+
+## Scripts
+
+* pyaconf2json -- loads and merges multiple configs and outputs in json format
+
+* pyaconf2yaml -- loads and merges multiple configs and outputs in yaml format
 
 ## License
 
