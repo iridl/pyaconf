@@ -36,22 +36,22 @@ def config():
 ### load
 
 ```python
-def load(src, fmt='auto', path=None):
+def load(src, *, format='auto', path=None):
    """ loads a dict that may include special keyword '__include__' at multiple levels,
    and resolves these includes and returns a dict without includes. It can also read the input dict from a file
    src -- dict|Mapping, FILE|io.StringIO(s), pathlib.Path|str
-   fmt -- 'auto' | 'pyaconf' | 'json' | 'yaml' | 'ini'
+   format -- 'auto' | 'pyaconf' | 'json' | 'yaml' | 'ini'
    path -- is used only when src doesn't contain path info, it is used for error messages and resolve relative include paths
 ```
 
 ### dump
 
 ```python
-def dump(x, dst=sys.stdout, fmt='auto'):
+def dump(x, dst=sys.stdout, *, format='auto'):
    """ Dumps resolved (without includes) config in json or yaml format. It doesn't preserve comments either. 
    x -- dict|Mapping
    dst -- FILE|io.StringIO(s), pathlib.Path|str
-   fmt -- 'auto' | 'json' | 'yaml'
+   format -- 'auto' | 'json' | 'yaml'
    """
 ```
 

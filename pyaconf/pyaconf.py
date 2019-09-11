@@ -46,11 +46,11 @@ def logg(*args, **kwargs):
 
 # --- load ---
 
-def load(src, fmt='auto', path=None):
+def load(src, *, format='auto', path=None):
    """ loads a dict that may include special keyword '__include__' at multiple levels,
    and resolves these includes and returns a dict without includes. It can also read the input dict from a file
    src -- dict|Mapping, FILE|io.StringIO(s), pathlib.Path|str
-   fmt -- 'auto' | 'pyaconf' | 'json' | 'yaml' | 'ini'
+   format -- 'auto' | 'pyaconf' | 'json' | 'yaml' | 'ini'
    path -- is used only when src doesn't contain path info, it is used for error messages and resolve relative include paths
    """
    if path is not None and not isinstance(path, pathlib.Path):
@@ -59,24 +59,24 @@ def load(src, fmt='auto', path=None):
    if isinstance(src, collections.abc.Mapping):
       r = _load_dict(src, path)
    elif isinstance(src, io.IOBase):
-      if fmt == 'auto':
-         raise Exception(f"pyaconf.load: specify fmt (fmt={fmt}, path={path})")
-      r = _load_file(src, fmt, path)
+      if format == 'auto':
+         raise Exception(f"pyaconf.load: specify format (format={format}, path={path})")
+      r = _load_file(src, format, path)
    elif isinstance(src, str):
-      r = load(pathlib.Path(src), fmt, path)
+      r = load(pathlib.Path(src), format=format, path=path)
    elif isinstance(src, pathlib.Path):
-      if fmt == 'auto':
+      if format == 'auto':
          ext = src.suffix
          if ext in _input_extensions:
-            fmt = _input_extensions[ext]
+            format = _input_extensions[ext]
          else:
-            raise Exception(f"pyaconf.load: cannot derive fmt from file extension, specify fmt (path={src})")
+            raise Exception(f"pyaconf.load: cannot derive format from file extension, specify format (path={src})")
 
       if path is not None and not src.is_absolute():
          src = path.parent / src
 
       with open(src, 'r') as f:
-         r = _load_file(f, fmt, src)
+         r = _load_file(f, format, src)
    else:
       raise Exception(f"pyaconf.load: illegal type of src (type={typ}, path={path})")
    return r
@@ -123,20 +123,20 @@ def _load_list(x, path):
    return [_load(a, path) for a in x]
 
 
-def _load_file(f, fmt, path):
-   if fmt == 'yaml':
+def _load_file(f, format, path):
+   if format == 'yaml':
       x = yaml.load(f, Loader=yaml.Loader)
-   elif fmt == 'json':
+   elif format == 'json':
       x = json.load(f)
-   elif fmt == 'pyaconf':
+   elif format == 'pyaconf':
       c = f.read()
       genv = {}
       exec(compile(c, path, 'exec'), genv)
       x = eval('config()', genv)
-   elif fmt == 'ini':
+   elif format == 'ini':
       x = _load_ini(f, path)
    else:
-      raise Exception(f"pyaconf.load: fmt is not supported (fmt={fmt}, path={path})")
+      raise Exception(f"pyaconf.load: format is not supported (format={format}, path={path})")
    return _load(x, path)
 
 def _load_ini(f, path):
@@ -188,36 +188,36 @@ def _deep_merge_lists(z, x):
 
 # --- dump ---
 
-def dump(x, dst=sys.stdout, fmt='auto'):
+def dump(x, dst=sys.stdout, *, format='auto'):
    """ Dumps resolved (without includes) config in json or yaml format. It doesn't preserve comments either. 
    x -- dict|Mapping
    dst -- FILE|io.StringIO(s), pathlib.Path|str
-   fmt -- 'auto' | 'json' | 'yaml'
+   format -- 'auto' | 'json' | 'yaml'
    """
    if isinstance(dst, io.IOBase):
-      if fmt == 'auto':
-         raise Exception(f"pyaconf.dump: specify fmt (fmt={fmt})")
-      r = _dump_file(x, dst, fmt)
+      if format == 'auto':
+         raise Exception(f"pyaconf.dump: specify format (format={format})")
+      r = _dump_file(x, dst, format)
    elif isinstance(dst, str):
-      r = dump(x, pathlib.Path(dst), fmt)
+      r = dump(x, pathlib.Path(dst), format=format)
    elif isinstance(dst, pathlib.Path):
-      if fmt == 'auto':
+      if format == 'auto':
          ext = dst.suffix
          if ext in _output_extensions:
-            fmt = _output_extensions[ext]
+            format = _output_extensions[ext]
          else:
-            raise Exception(f"pyaconf.dump: cannot derive fmt from file extension, specify fmt (path={dst})")
+            raise Exception(f"pyaconf.dump: cannot derive format from file extension, specify format (path={dst})")
       with open(dst, 'w') as f:
-         r = _dump_file(x, f, fmt)
+         r = _dump_file(x, f, format)
    else:
       raise Exception(f"pyaconf.dump: illegal type of dst")
 
-def _dump_file(x, f, fmt):
-   if fmt == 'json':
+def _dump_file(x, f, format):
+   if format == 'json':
       json.dump(x, f, sort_keys=True, indent=3)
-   elif fmt == 'yaml':
+   elif format == 'yaml':
       yaml.dump(x, f, default_style='', default_flow_style=False)
    else:
-      raise Exception(f"pyaconf.dump: illegal fmt (fmt={fmt})")
+      raise Exception(f"pyaconf.dump: illegal format (format={format})")
    
 

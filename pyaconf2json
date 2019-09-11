@@ -5,6 +5,6 @@ try:
    if len(sys.argv) < 2:
       raise Exception(f"Usage: {sys.argv[0]} file...")
    c = pyaconf.merge([pyaconf.load(src) for src in sys.argv[1:]])
-   pyaconf.dump(c, sys.stdout, 'json')
+   pyaconf.dump(c, sys.stdout, format='json')
 except Exception as e:
    print(f"{sys.argv[0]}: error: {e!r}", file=sys.stderr)
