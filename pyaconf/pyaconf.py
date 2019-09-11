@@ -76,7 +76,6 @@ def load(src, fmt='auto', path=None):
          src = path.parent / src
 
       with open(src, 'r') as f:
-         logg(src)
          r = _load_file(f, fmt, src)
    else:
       raise Exception(f"pyaconf.load: illegal type of src (type={typ}, path={path})")
@@ -155,6 +154,7 @@ def _load_ini(f, path):
 def merge(xs):
    """ merges the list of dicts (that dont contain includes) and returns a new dict
    where the values of the first dict are updated recursively by the values of the second dict.
+   xs -- a list of dicts
    """
    z = {}
    for x in xs:
@@ -190,6 +190,9 @@ def _deep_merge_lists(z, x):
 
 def dump(x, dst=sys.stdout, fmt='auto'):
    """ Dumps resolved (without includes) config in json or yaml format. It doesn't preserve comments either. 
+   x -- dict|Mapping
+   dst -- FILE|io.StringIO(s), pathlib.Path|str
+   fmt -- 'auto' | 'json' | 'yaml'
    """
    if isinstance(dst, io.IOBase):
       if fmt == 'auto':
