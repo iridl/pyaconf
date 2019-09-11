@@ -110,7 +110,7 @@ def _load_dict(x, path):
    if LOAD_KEY in x:
       loads = x[LOAD_KEY]
       for v in (loads if isinstance(loads, list) else [loads]):
-         rs.append(load(*v, path=path) if isinstance(v, tuple) else load(v, path=path))
+         rs.append(load(**v, path=path) if isinstance(v, collections.abc.Mapping) else load(v, path=path))
    y = {}
    for k,v in x.items():
       if k != LOAD_KEY:
