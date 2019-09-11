@@ -181,10 +181,15 @@ def merge(xs):
    where the values of the first dict are updated recursively by the values of the second dict.
    xs -- a list of dicts
    """
-   z = {}
-   for x in xs:
-      z = _deep_merge(z, x)
-   return z
+   if len(xs) == 0:
+      r = {}
+   elif len(xs) == 1:
+      r = xs[0]
+   else:
+      r = xs[0]
+      for x in xs[1:]:
+         r = _deep_merge(r, x)
+   return r
 
 def _deep_merge(z, x):
    if isinstance(z, collections.abc.Mapping) and isinstance(x, collections.abc.Mapping):
