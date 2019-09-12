@@ -1,0 +1,4 @@
+__include__: common.yaml.j2
+username: igor
+password: khomyakov
+office: 113D
