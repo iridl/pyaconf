@@ -1,3 +1,13 @@
+What's new in pyaconf 0.6.0
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Minor API update and name change
+* Use dict(src,format) to specify load parameters in include
+* Added context and jinja2 template processing
+* Optimization of merge
+* Renamed and updated utility that merges several configs and renders the result
+* Updated jinji2 call to enable jinji2 inheritance
+
 What's new in pyaconf 0.5.0
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

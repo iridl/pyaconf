@@ -12,6 +12,7 @@ user: romeo
 password: romeoalpha
 ```
 
+* Includes may be used at any level and apply only to its layer. 
 * Simple API: `load`, `dump`, and for more advanced use `merge`.
 * Supports dynamic configs written in Python `.pyaconf`, for example:
 
@@ -30,18 +31,35 @@ def config():
 
 * Allows to output configs in `.json` and `.yaml`. Provides two shell scripts.
 * Supports `.ini` input format as understood by python's `configparser`.
+* Supports Jinji2 templates, you just need to add `.j2` or `.jinji2` extension to your config file and it will be processed by Jinji2. For example:
+
+```yaml
+user: {{ username }}
+password = {{ password }}
+```
+
+* The dictionary that contains includes serves as a context for these includes. For template includes, the dictionary is passed as a context to the template processing. For non-template includes, the dictionary merges with the include. When all includes processed this way, they all merge together.
+
+```yaml
+__include__: [a.yaml.j2, b.yaml]
+x: 1
+y: 2
+```
+
 
 ## API
 
 ### load
 
 ```python
-def load(src, *, format='auto', path=None):
+def load(src, *, format='auto', path=None, context={}):
    """ loads a dict that may include special keyword '__include__' at multiple levels,
    and resolves these includes and returns a dict without includes. It can also read the input dict from a file
    src -- dict|Mapping, FILE|io.StringIO(s), pathlib.Path|str
    format -- 'auto' | 'pyaconf' | 'json' | 'yaml' | 'ini'
    path -- is used only when src doesn't contain path info, it is used for error messages and resolve relative include paths
+   context -- is a dict that is used as context for template rendering if src is a template
+   """
 ```
 
 ### dump
@@ -68,9 +86,7 @@ def merge(xs):
 
 ## Scripts
 
-* pyaconf2json -- loads and merges multiple configs and outputs in json format
-
-* pyaconf2yaml -- loads and merges multiple configs and outputs in yaml format
+* pyaconf_render -- loads and merges multiple configs and renders the result in json or yaml format
 
 ## License
 
