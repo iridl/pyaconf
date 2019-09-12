@@ -46,6 +46,36 @@ x: 1
 y: 2
 ```
 
+* Another example with template:
+
+```yaml
+# common.yaml.j2
+host: local
+user: {{ username }}
+password: {{ password }}
+credentials: [{{ password }}, {{username}}]
+```
+
+```yaml
+# devel.yaml
+__include__: common.yaml.j2
+username: Donald
+password: Trump
+office: 113D
+```
+
+```yaml
+# pyaconf_render -f json devel.yaml
+{
+  "credentials": [
+     "Trump",
+     "Donald"
+  ],
+  "host": "local",
+  "password": "Trump",
+  "user": "Donald"
+}
+```
 
 ## API
 

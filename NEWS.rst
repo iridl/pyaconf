@@ -1,3 +1,9 @@
+What's new in pyaconf 0.7.0
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Added common/devel template example
+* Updated pyaconf_render to accept input and context formats
+
 What's new in pyaconf 0.6.0
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
