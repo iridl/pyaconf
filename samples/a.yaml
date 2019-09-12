@@ -1,0 +1,2 @@
+#__include__: b.yaml.j2
+a: Hello, World!

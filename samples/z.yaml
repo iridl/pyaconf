@@ -1,0 +1,2 @@
+__include__: [a.yaml, b.yaml]
+a: foo
