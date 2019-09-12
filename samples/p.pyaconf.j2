@@ -1,0 +1,7 @@
+import os
+def config():
+   return dict(
+      user = "{{ username }}",
+      password = os.environ['PASSWORD'],
+   )
+
